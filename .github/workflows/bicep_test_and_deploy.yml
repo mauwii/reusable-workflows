@@ -1,0 +1,61 @@
+name: verify_bicep
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, edited, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  bicep_create_matrix:
+    name: create matrix
+    uses: ./.github/workflows/bicep_create_matrix.yml
+
+  matrixgen:
+    needs: bicep_create_matrix
+    strategy:
+      matrix: ${{ fromJson(needs.bicep_create_matrix.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "check ${{ matrix.path }}"
+        run: |
+          echo "bicepdir: ${{ matrix.bicepdir }} template: ${{ matrix.template }} parameter: ${{ matrix.parameter }}"
+
+      - name: no parameter
+        if: matrix.parameter == ''
+        run: echo "no parameter"
+
+      - name: get changed files
+        run: |
+          while IFS= read -r file; do
+              printf "%10s %s" "changed:" "${file}"
+          done < <(git diff --name-only --diff-filter=d main -- '*.bicep' | xargs -0)
+
+      # - name: lint bicep
+      #   run: |
+      #     ls -la
+      #     az config set auto-upgrade.enable=false
+      #     az bicep build -f "./${{ matrix.template }}"
+      #   working-directory: "${{ format('{0}', matrix.bicepdir) }}"
+
+      # - name: Bicep Build
+      #   if: matrix.template != ''
+      #   uses: Azure/bicep-build-action@v1.0.0
+      #   with:
+      #     bicepFilePath: "${{ matrix.bicepdir }}/${{ matrix.template }}"
+
+  # build_bicep:
+  #   uses: ./.github/workflows/reusable-lint-bicep.yml
+  #   needs: bicep_create_matrix
+  #   with:
+  #     template: ${{ needs.bicep_create_matrix.outputs.template_paths }}/${{ needs.bicep_create_matrix.outputs.template_files }}

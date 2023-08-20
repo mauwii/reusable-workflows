@@ -1,0 +1,22 @@
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: "Path to the bicep file"
+        type: string
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build_bicep:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Azure/bicep-build-action@v1.0.0
+        with:
+          bicepFilePath: ${{ inputs.path }}
