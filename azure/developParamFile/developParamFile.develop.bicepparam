@@ -1,6 +1,5 @@
 using './developParamFile.bicep'
 
-param siteName = 'FuncApp-test'
-param storageAccountName = 'storetest'
+param siteName = 'FuncApp-dev'
+param storageAccountName = 'devstr'
 param location = 'westeurope'
-

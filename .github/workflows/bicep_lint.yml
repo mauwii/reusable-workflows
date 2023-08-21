@@ -30,14 +30,13 @@ jobs:
         with:
           bicepFilePath: ${{ inputs.bicepFilePath }}
       - id: verify
+        name: verify json output
         shell: bash
         run: |
-          FILE="$(dirname FILE_PATH)/azuredeploy.json"
-          if test -f "$FILE"; then
+          FILE=./azuredeploy.json
+          if [ -f "$FILE" ]; then
             echo "$FILE created successfully"
           else
             echo "$FILE not found."
             exit 1
           fi
-        env:
-          FILE_PATH: ${{ inputs.bicepFilePath }}
