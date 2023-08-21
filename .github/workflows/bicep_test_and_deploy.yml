@@ -2,6 +2,9 @@ name: verify-bicep
 on:
   push:
     branches: [main]
+    paths:
+      - "**/*.bicep"
+      - "**/*.bicepparam"
   pull_request:
     branches: [main]
     types: [opened, synchronize, edited, ready_for_review]
