@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "github.vscode-github-actions",
+    "ms-azuretools.vscode-bicep",
+    "github.vscode-pull-request-github",
+    "editorconfig.editorconfig",
+    "mads-hartmann.bash-ide-vscode"
+  ]
+}
