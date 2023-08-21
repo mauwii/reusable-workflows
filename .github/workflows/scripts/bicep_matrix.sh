@@ -6,6 +6,8 @@ template_files=()
 template_paths=()
 template_parameters=()
 
+# get the base sha for the diff
+BASE_SHA=$(git rev-parse "${GITHUB_BASE_REF:-${GITHUB_REF_NAME}^}")
 # loop over changed bicep files but ignore deleted files
 while IFS= read -r bicep; do
 
@@ -42,7 +44,7 @@ while IFS= read -r bicep; do
             template_parameters+=("$null")
         fi
     fi
-done < <(git diff --name-only --diff-filter=d "origin/${GITHUB_BASE_REF:-${GITHUB_REF_NAME}^}" "origin/${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" -- 'azure/*.bicep*' | xargs -0)
+done < <(git diff --name-only --diff-filter=d "${BASE_SHA}" -- 'azure/*.bicep*' | xargs -0)
 
 # function to create a json from the collected arrays
 createJson() {
