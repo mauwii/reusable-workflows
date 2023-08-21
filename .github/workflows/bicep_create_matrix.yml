@@ -1,22 +1,22 @@
-name: bicep
+name: bicep-matrix
 on:
   workflow_call:
     # Map the workflow outputs to job outputs
     outputs:
       matrix:
         description: "The second output string"
-        value: ${{ jobs.get_templates.outputs.matrix }}
+        value: ${{ jobs.create.outputs.matrix }}
 
 jobs:
-  get_templates:
+  create:
     name: create matrix
     runs-on: ubuntu-latest
     # Map the job outputs to step outputs
     outputs:
-      matrix: ${{ steps.create_output.outputs.matrix }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - id: create_output
+      - id: matrix
         run: ./.github/workflows/scripts/bicep_matrix.sh

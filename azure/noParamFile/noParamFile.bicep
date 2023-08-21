@@ -1,14 +1,18 @@
 @description('The name of you Web Site.')
-param siteName string = 'FuncApp-${uniqueString(resourceGroup().id)}'
-param storageAccountName string = 'store${uniqueString(resourceGroup().id)}'
+param siteName string = 'FuncApp'
+
+@description('The name of the Storage Account.')
+param storageAccountName string = 'funcappstorage'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
 var hostingPlanName = 'hpn-${resourceGroup().name}'
+var uniqueSiteName = '${siteName}-${uniqueString(resourceGroup().id)}'
+var uniqueStorageAccountName = '${storageAccountName}${uniqueString(resourceGroup().id)}'
 
 resource site 'Microsoft.Web/sites@2022-03-01' = {
-  name: siteName
+  name: uniqueSiteName
   kind: 'functionapp,linux'
   location: location
   properties: {
@@ -24,7 +28,7 @@ resource site 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${uniqueStorageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
       ]
     }
@@ -47,7 +51,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: storageAccountName
+  name: uniqueStorageAccountName
   location: location
   kind: 'StorageV2'
   sku: {

@@ -1,0 +1,43 @@
+name: bicep-build-output
+
+on:
+  workflow_call:
+    inputs:
+      bicepFilePath:
+        description: "Path to the bicep file"
+        type: string
+        required: true
+      runsOn:
+        description: "The type of machine to run the job on"
+        type: string
+        required: false
+        default: "ubuntu-latest"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runsOn}}
+    name: build and test ${{ inputs.bicepFilePath }}
+    if: endsWith(inputs.bicepFilePath, '.bicep')
+    steps:
+      - uses: actions/checkout@v3
+      # ToDo: Add a optional step to login to Azure
+      - id: build
+        uses: Azure/bicep-build-action@v1.0.1
+        with:
+          bicepFilePath: ${{ inputs.bicepFilePath }}
+      - id: verify
+        shell: bash
+        run: |
+          FILE="$(dirname FILE_PATH)/azuredeploy.json"
+          if test -f "$FILE"; then
+            echo "$FILE created successfully"
+          else
+            echo "$FILE not found."
+            exit 1
+          fi
+        env:
+          FILE_PATH: ${{ inputs.bicepFilePath }}

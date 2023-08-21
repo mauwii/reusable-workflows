@@ -28,7 +28,7 @@ while IFS= read -r bicep; do
             template_parameters+=("$null")
         fi
     fi
-done < <(git diff --name-only --diff-filter=d "${GITHUB_BASE_REF:-HEAD^@}" "${GITHUB_REF_NAME}" -- '*.bicep' | xargs -0)
+done < <(git diff --name-only --diff-filter=d "${GITHUB_REF_NAME}" -- '*.bicep' | xargs -0)
 
 # function to create a json from the collected arrays
 createJson() {
