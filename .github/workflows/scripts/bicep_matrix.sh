@@ -50,7 +50,12 @@ done < <(git diff --name-only --diff-filter=d "${BASE_SHA}" -- 'azure/*.bicep*' 
 createJson() {
     printf "["
     for ((i = 0; i < ${#template_files[@]}; i++)); do
-        printf "{\"name\":\"%s\",\"path\":\"%s\",\"bicep\":\"%s\",\"bicepparams\":\"%s\"}" "${template_names[${i}]}" "${template_paths[${i}]}" "${template_files[${i}]}" "${template_parameters[${i}]}"
+        printf "{"
+        printf "\"name\":\"%s\"," "${template_names[${i}]}"
+        printf "\"path\":\"%s\"," "${template_paths[${i}]}"
+        printf "\"bicep\":\"%s\"," "${template_files[${i}]}"
+        printf "\"bicepparams\":\"%s\"" "${template_parameters[${i}]}"
+        printf "}"
         # check if we are not at the end of the array
         if [[ $i -lt $((${#template_files[@]} - 1)) ]]; then
             printf ","
