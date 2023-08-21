@@ -32,8 +32,8 @@ jobs:
       - id: verify
         shell: bash
         run: |
-          FILE="$(dirname FILE_PATH)/azuredeploy.json"
-          if test -f "$FILE"; then
+          FILE="$(dirname $FILE_PATH)/azuredeploy.json"
+          if [ -f "$FILE" ]; then
             echo "$FILE created successfully"
           else
             echo "$FILE not found."
