@@ -30,9 +30,9 @@ while IFS= read -r bicep; do
         template_files+=("${filename}.bicep")
         template_paths+=("${bicep_path}")
 
-        # check if there is a bicepparam file for the current branch
-        if [[ -f "${bicep_path}/${filename}.${GITHUB_REF_NAME}.bicepparam" ]]; then
-            template_parameters+=("${filename}.${GITHUB_REF_NAME}.bicepparam")
+        # check if there is a bicepparam file for the PR-target-/current branch
+        if [[ -f "${bicep_path}/${filename}.${GITHUB_BASE_REF-$GITHUB_REF_NAME}.bicepparam" ]]; then
+            template_parameters+=("${filename}.${GITHUB_BASE_REF-$GITHUB_REF_NAME}.bicepparam")
         # check if there is a general bicepparam file
         elif [[ -f "${bicep_path}/${filename}.bicepparam}" ]]; then
             template_parameters+=("${filename}.bicepparam}")
