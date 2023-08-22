@@ -1,4 +1,4 @@
-using './appfunction.bicep'
+using './main.bicep'
 
 param siteName = 'FunctionApp'
 param storageAccountName = 'functionappstorage'
