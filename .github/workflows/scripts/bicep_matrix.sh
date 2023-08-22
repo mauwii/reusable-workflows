@@ -11,40 +11,42 @@ BASE_SHA=$(git rev-parse "origin/${GITHUB_BASE_REF:-${GITHUB_REF_NAME}^}")
 # loop over changed bicep files but ignore deleted files
 while IFS= read -r bicep; do
 
+    # ensure clean bicepparam variable
+    bicepparam=""
     # create variables for some checks
-    filename=$(basename "${bicep%.bicep*}")
-    [[ $filename = *".${GITHUB_BASE_REF-$GITHUB_REF_NAME}"* ]] \
-        && filename="${filename%."${GITHUB_BASE_REF-$GITHUB_REF_NAME}"*}"
+    filename=$(basename "${bicep}")
     foldername="$(basename "$(dirname "${bicep}")")"
     bicep_path="$(dirname "${bicep}")"
 
-    # check if the bicep file is named like the folder
-    if [[ "${foldername}" = "${filename}" ]]; then
+    # skip empty filename
+    [[ -z "${filename}" ]] && continue
 
-        # make sure the folder is not already in the array
-        if [[ "${template_paths[*]}" = *" ${bicep_path} "* ]]; then
-            echo "Folder ${bicep_path} already in array"
-            continue
-        fi
+    # make sure the folder is not already in the array
+    [[ "${template_paths[*]}" = *"${bicep_path}"* ]] \
+        && echo "skipping ${bicep_path}" \
+        && continue
 
-        # add current item to the arrays
-        template_names+=("${filename}")
-        template_files+=("${filename}.bicep")
-        template_paths+=("${bicep_path}")
-
-        # check if there is a bicepparam file for the PR-target-/current branch
-        if [[ -f "${bicep_path}/${filename}.${GITHUB_BASE_REF-$GITHUB_REF_NAME}.bicepparam" ]]; then
-            template_parameters+=("${filename}.${GITHUB_BASE_REF-$GITHUB_REF_NAME}.bicepparam")
-        # check if there is a general bicepparam file
-        elif [[ -f "${bicep_path}/${filename}.bicepparam}" ]]; then
-            template_parameters+=("${filename}.bicepparam}")
-        # if no bicepparams where found add null to the array
-        else
-            echo "No parameter file found for ${filename}"
-            template_parameters+=("$null")
-        fi
+    # ensure that changes to a .bicepparameter file get validated
+    if [[ -f "${bicep_path}/main.${GITHUB_BASE_REF:-${GITHUB_REF_NAME}}.bicepparam" ]]; then
+        # echo "found parameter file for ${foldername}"
+        filename="main.bicep"
+        bicepparam="main.${GITHUB_BASE_REF:-${GITHUB_REF_NAME}}.bicepparam"
+    elif [[ -f "${bicep_path}/main.bicepparam" ]]; then
+        # echo "found default parameter file for ${foldername}"
+        filename="main.bicep"
+        bicepparam="main.bicepparam"
+    else
+        echo "found no fitting bicepparam file for ${foldername}"
     fi
-done < <(git diff --name-only --diff-filter=d "${BASE_SHA}" -- 'azure/*.bicep*' | xargs -0)
+
+    # add current item to the arrays
+    echo "adding ${foldername} to the matrix"
+    template_names+=("${foldername}")
+    template_files+=("main.bicep")
+    template_paths+=("${bicep_path}")
+    template_parameters+=("${bicepparam}")
+
+done < <(git diff --name-only --diff-filter=d "${BASE_SHA}" -- 'azure/*/main.*bicep*' | xargs -0)
 
 # function to create a json from the collected arrays
 createJson() {
