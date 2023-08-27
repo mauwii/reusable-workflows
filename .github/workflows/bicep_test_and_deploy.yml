@@ -32,7 +32,7 @@ jobs:
 
   verify:
     name: PR-Validation
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && needs.matrix-output.outputs.matrix != ''
     needs: matrix-output
     strategy:
       matrix: ${{ fromJson(needs.matrix-output.outputs.matrix) }}

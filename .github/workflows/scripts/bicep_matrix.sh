@@ -69,10 +69,9 @@ createJson() {
 # create the matrix json
 matrix=$(createJson | jq -c '{include: [.[]| {name: .name, path: .path, template: .bicep, parameters: .bicepparams}]}')
 
-# print the matrix json
-printf "\ncreated matrix:\n%s" "$(echo "${matrix}" | jq)"
-
-if [[ $(echo "${matrix}" | jq -c) != '{"include":[]}' ]]; then
+if [[ "$(echo "${matrix}" | jq -c '.include')" != "[]" ]]; then
+    # print the matrix json
+    printf "\ncreated matrix:\n%s" "$(echo "${matrix}" | jq)"
     # create output variable
     printf "matrix=%s\n" "${matrix}" >>"${GITHUB_OUTPUT}"
 fi
