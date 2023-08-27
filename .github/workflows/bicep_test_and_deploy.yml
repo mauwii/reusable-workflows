@@ -1,29 +1,33 @@
-name: verify-bicep
+name: bicep
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths:
       - "**/*.bicep"
       - "**/*.bicepparam"
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+    paths:
+      - "**/*.bicep"
+      - "**/*.bicepparam"
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  id-token: write
 
 jobs:
   matrix-output:
     name: create matrix
     uses: ./.github/workflows/bicep_create_matrix.yml
 
-  lint:
+  verify:
     needs: matrix-output
     strategy:
       matrix: ${{ fromJson(needs.matrix-output.outputs.matrix) }}
+    uses: ./.github/workflows/bicep_verify.yml
     name: ${{ matrix.name }}
-    uses: ./.github/workflows/bicep_lint.yml
     with:
-      bicepFilePath: "${{ matrix.path }}/${{ matrix.template }}"
+      bicepFilePath: "./${{ matrix.path }}/${{ matrix.template }}"
+      bicepParameters: "./${{ matrix.path }}/${{ matrix.parameters }}"
+      runsOn: ubuntu-latest
+      login: true
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}

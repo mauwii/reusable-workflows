@@ -1,0 +1,35 @@
+name: Bicep Preflight Validation
+author: mauwii
+description: |
+  This action is used to create different types of deployments:
+  - Scopes: [sub]scription, Resource-[group]
+  - Types: [create] deployment, Preflight [validate]ion, [what-if]
+  Therefore it needs to be run in a Job after logging in to azure
+  with contributor access to the Subscription.
+
+inputs:
+  bicepFilePath:
+    description: Path to the bicep file
+    required: true
+  bicepParameters:
+    description: Path to the parameters file
+    required: true
+  deploymentScope:
+    description: The scope of the deployment [sub, group]
+    required: true
+  deploymentType:
+    description: The type of the deployment [create, validate, what-if]
+    required: true
+  deploymentLocation:
+    description: The location of the deployment
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: >
+        az deployment ${{ inputs.deploymentScope }} ${{ inputs.deploymentType }}
+        --template-file="${{ inputs.bicepFilePath }}"
+        --parameters="${{ inputs.bicepParameters }}"
+        --location="${{ inputs.deploymentLocation }}"
