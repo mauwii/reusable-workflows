@@ -63,7 +63,7 @@ jobs:
 
   tag:
     name: 'set Tag "deployed"'
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/introduce-deployed-tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
