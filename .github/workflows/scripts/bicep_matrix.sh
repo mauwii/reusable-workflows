@@ -7,7 +7,8 @@ template_paths=()
 template_parameters=()
 
 # get the base sha for the diff
-BASE_SHA=$(git rev-parse "origin/${GITHUB_BASE_REF:-${GITHUB_REF_NAME}^}")
+BASE_SHA=$(git rev-parse deployed)
+# BASE_SHA=$(git rev-parse "origin/${GITHUB_BASE_REF:-${GITHUB_REF_NAME}^}")
 # loop over changed bicep files but ignore deleted files
 while IFS= read -r bicep; do
 
