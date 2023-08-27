@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 @description('Will get pre- and suffixed to create names of the Resources.')
-param applicationName string = 'FuncApp'
+param applicationName string = 'FuncApp-Sample'
 
 @description('Environment name used to suffix resource names.')
 @allowed([
