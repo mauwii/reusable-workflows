@@ -68,6 +68,7 @@ jobs:
           deploymentLocation: westeurope
 
   tag:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: 'set Tag "deployed"'
     needs: matrix-output
     runs-on: ubuntu-latest
@@ -82,11 +83,3 @@ jobs:
           git push origin --tags --force
         env:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      # - name: set deployed tag
-      #   uses: laputansoft/github-tag-action@v4.6
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     tag: 'deployed'
-      #     release_branches: main
-      #     default_bump: false
-      #     create_annotated_tag: false
