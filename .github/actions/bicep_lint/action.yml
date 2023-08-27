@@ -1,0 +1,29 @@
+name: Lint Bicep File
+author: mauwii
+description: |
+  This action validates the syntax of a Bicep template
+  by converting it to an ARM template
+
+inputs:
+  bicepFilePath:
+    description: Path to the bicep file
+    required: true
+
+# outputs:
+#   ARM-Template:
+#     description: The ARM template that was built from the bicep file
+#     value: ${{ steps.build.outputs.ARM-Template }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: build
+      shell: bash
+      run: >
+        az bicep build
+        --file "${{ inputs.bicepFilePath }}"
+        --stdout
+      # run: >
+      #   printf "ARM-Template=%s"
+      #   "$(bicep build "${{ inputs.bicepFilePath }}" --stdout | jq -c)"
+      #   >> $GITHUB_OUTPUT

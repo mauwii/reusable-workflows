@@ -9,7 +9,7 @@ on:
 
 jobs:
   create:
-    name: create matrix
+    name: matrix output
     runs-on: ubuntu-latest
     # Map the job outputs to step outputs
     outputs:

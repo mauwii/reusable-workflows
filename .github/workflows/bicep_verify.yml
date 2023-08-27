@@ -1,0 +1,79 @@
+name: bicep verification
+
+on:
+  workflow_call:
+    inputs:
+      bicepFilePath:
+        description: "Path to the bicep template"
+        type: string
+        required: true
+      bicepParameters:
+        description: "Path to the bicepparam file"
+        type: string
+        required: true
+      runsOn:
+        description: "The type of machine to run the job on"
+        type: string
+        required: false
+        default: "ubuntu-latest"
+      login:
+        description: "Login to Azure"
+        type: boolean
+        required: false
+        default: false
+
+    secrets:
+      AZURE_CREDENTIALS:
+        required: false
+
+jobs:
+  verify:
+    runs-on: ${{ inputs.runsOn}}
+    name: verify ${{ inputs.bicepFilePath }}
+    if: endsWith(inputs.bicepFilePath, '.bicep')
+    steps:
+      # checkout sources
+      - uses: actions/checkout@v3
+
+      # login to azure
+      - id: login
+        if: inputs.login == true
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # build ARM Template to verify bicep
+      - id: bicep-lint
+        name: lint
+        uses: ./.github/actions/bicep_lint
+        with:
+          bicepFilePath: ${{ inputs.bicepFilePath }}
+
+      # PreFlight validation
+      - id: preflight
+        uses: ./.github/actions/bicep_validate
+        with:
+          bicepFilePath: ${{ inputs.bicepFilePath }}
+          bicepParameters: ${{ inputs.bicepParameters }}
+          deploymentScope: sub
+          deploymentType: validate
+          deploymentLocation: westeurope
+
+      # What-If Deployment
+      - id: whatif
+        name: What-If
+        uses: ./.github/actions/bicep_validate
+        with:
+          bicepFilePath: ${{ inputs.bicepFilePath }}
+          bicepParameters: "${{ inputs.bicepParameters }}"
+          deploymentScope: sub
+          deploymentType: what-if
+          deploymentLocation: westeurope
+
+      # clean azure cache
+      - name: clear az cache
+        if: steps.login.outcome == 'success'
+        run: |
+          az logout
+          az cache purge
+          az account clear
