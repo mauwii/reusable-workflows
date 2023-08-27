@@ -1,4 +1,5 @@
 name: bicep - validate and deploy
+
 on:
   push:
     branches: [main, develop]
@@ -10,14 +11,19 @@ on:
     paths:
       - "**/*.bicep"
       - "**/*.bicepparam"
-      - '.github/workflows/bicep_test_and_deploy.yml'
-      - '.github/workflows/bicep_verify.yml'
-      - '.github/workflows/bicep_create_matrix.yml'
-      - '.github/workflows/scripts/bicep_matrix.sh'
-      - '.github/actions/bicep_lint/action.yml'
-      - '.github/actions/bicep_validate/action.yml'
+      - ".github/workflows/bicep_test_and_deploy.yml"
+      - ".github/workflows/bicep_verify.yml"
+      - ".github/workflows/bicep_create_matrix.yml"
+      - ".github/workflows/scripts/bicep_matrix.sh"
+      - ".github/actions/bicep_lint/action.yml"
+      - ".github/actions/bicep_validate/action.yml"
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: read
 
 jobs:
   matrix-output:
@@ -60,3 +66,20 @@ jobs:
           deploymentScope: sub
           deploymentType: what-if # placeholder for now
           deploymentLocation: westeurope
+
+  tag:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: 'set Tag "deployed"'
+    needs: matrix-output
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-tags: true
+          fetch-depth: 0
+      - run: |
+          git tag deployed origin/main --force
+          git push origin --tags --force
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
