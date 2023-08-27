@@ -20,14 +20,6 @@ on:
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
 
-# permissions:
-#   contents: write
-#   id-token: write
-#   checks: read
-
-# env:
-#   github-token: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   matrix-output:
     name: create matrix
@@ -81,7 +73,7 @@ jobs:
           fetch-tags: true
       - run: |
           git tag deployed --force
-          git push https --tags --force
+          git push origin --tags --force
         env:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       # - name: set deployed tag
