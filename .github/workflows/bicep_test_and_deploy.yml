@@ -1,4 +1,5 @@
 name: bicep - validate and deploy
+
 on:
   push:
     branches: [main, develop]
@@ -18,6 +19,14 @@ on:
       - ".github/actions/bicep_validate/action.yml"
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
+
+# permissions:
+#   contents: write
+#   id-token: write
+#   checks: read
+
+# env:
+#   github-token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   matrix-output:
@@ -63,13 +72,23 @@ jobs:
 
   tag:
     name: 'set Tag "deployed"'
-    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/introduce-deployed-tag'
+    needs: matrix-output
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set Tag
-        run: |
-          git config --global user.email "${GITHUB_ACTOR}"
-          git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag deployed origin/main --force
-          git push origin --tags --force
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-tags: true
+      - run: |
+          git tag deployed --force
+          git push https --tags --force
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: set deployed tag
+      #   uses: laputansoft/github-tag-action@v4.6
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag: 'deployed'
+      #     release_branches: main
+      #     default_bump: false
+      #     create_annotated_tag: false
