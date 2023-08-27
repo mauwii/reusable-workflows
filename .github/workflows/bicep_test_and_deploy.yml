@@ -77,7 +77,7 @@ jobs:
           persist-credentials: true
           fetch-tags: true
       - run: |
-          git tag deployed --force
+          git tag deployed origin/main --force
           git push origin --tags --force
         env:
           github-token: ${{ secrets.GITHUB_TOKEN }}
