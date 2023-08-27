@@ -1,4 +1,4 @@
-name: bicep
+name: bicep - validate and deploy
 on:
   push:
     branches: [main, develop]
@@ -19,6 +19,7 @@ jobs:
     uses: ./.github/workflows/bicep_create_matrix.yml
 
   verify:
+    if: github.event_name == 'pull_request'
     needs: matrix-output
     strategy:
       matrix: ${{ fromJson(needs.matrix-output.outputs.matrix) }}
@@ -31,3 +32,25 @@ jobs:
       login: true
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
+  deploy:
+    name: Deployment
+    if: github.event_name == 'push'
+    needs: matrix-output
+    strategy:
+      matrix: ${{ fromJson(needs.matrix-output.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - id: deploy
+        name: deploy ${{ matrix.name }}
+        uses: ./.github/actions/bicep_validate
+        with:
+          bicepFilePath: ./${{ matrix.path }}/${{ matrix.template }}
+          bicepParameters: ./${{ matrix.path }}/${{ matrix.parameters }}
+          deploymentScope: sub
+          deploymentType: what-if # placeholder for now
+          deploymentLocation: westeurope
