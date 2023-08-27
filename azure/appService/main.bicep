@@ -1,4 +1,5 @@
 targetScope = 'subscription'
+
 @description('Will get pre- and suffixed to create names of the Resources.')
 param applicationName string = 'FuncApp'
 
@@ -22,7 +23,6 @@ param deployCdn bool = true
 var resourceGroupName = '${applicationName}-${environment}-rg'
 var appServiceAppName = 'as-${applicationName}-${environment}'
 var appServicePlanName = 'asp-${applicationName}-${environment}'
-// var appServiceUniqueName = '${applicationName}-${uniqueString(rg.id)}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
@@ -33,7 +33,7 @@ module app 'modules/app.bicep' = {
   scope: rg
   name: 'myAppService'
   params: {
-    appServiceAppName: appServiceAppName // appServiceUniqueName
+    appServiceAppName: appServiceAppName
     appServicePlanName: appServicePlanName
     appServicePlanSkuName: appServicePlanSkuName
     location: location
