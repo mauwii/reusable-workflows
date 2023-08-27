@@ -76,6 +76,7 @@ jobs:
         with:
           persist-credentials: true
           fetch-tags: true
+          fetch-depth: 0
       - run: |
           git tag deployed origin/main --force
           git push origin --tags --force
