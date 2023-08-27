@@ -10,6 +10,12 @@ on:
     paths:
       - "**/*.bicep"
       - "**/*.bicepparam"
+      - '.github/workflows/bicep_test_and_deploy.yml'
+      - '.github/workflows/bicep_verify.yml'
+      - '.github/workflows/bicep_create_matrix.yml'
+      - '.github/workflows/scripts/bicep_matrix.sh'
+      - '.github/actions/bicep_lint/action.yml'
+      - '.github/actions/bicep_validate/action.yml'
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
 
