@@ -20,6 +20,11 @@ on:
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: read
+
 jobs:
   matrix-output:
     name: create matrix
