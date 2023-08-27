@@ -14,9 +14,9 @@ param environment string = 'dev'
 param location string = 'westeurope'
 
 var resourceGroupName = '${applicationName}-${environment}-rg'
-var hostingPlanName = 'plan-${applicationName}-${environment}'
-var uniqueSiteName = '${applicationName}-${environment}-${uniqueString(rg.id)}'
-var uniqueStorageAccountName = 'stg${toLower(substring(applicationName, 0, 5))}${uniqueString(rg.id)}'
+var hostingPlanName = 'asp-${applicationName}-${environment}'
+var uniqueSiteName = '${applicationName}-${environment}-${substring(uniqueString(rg.id), 0, 4)}'
+var uniqueStorageAccountName = 'stg${toLower(substring(applicationName, 0, 5))}${environment}${substring(uniqueString(rg.id), 0, 4)}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
