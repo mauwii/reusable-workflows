@@ -1,0 +1,21 @@
+name: Lint Bicep File
+author: mauwii
+description: |
+  This action will output a matrix for all changed bicep templates,
+  containing the following variables:
+    - name: can be used to name the job
+    - path: path to the bicep file
+    - template: filename of the bicep file
+    - parameters: filename of the parameters file
+
+outputs:
+  matrix:
+    description: "Job Matrix for all changed bicep templates"
+    value: ${{ steps.create_matrix.outputs.matrix }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: create_matrix
+      run: ${{ github.action_path }}/bicep_matrix.sh
+      shell: bash

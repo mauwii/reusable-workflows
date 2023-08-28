@@ -13,9 +13,9 @@ on:
       - "**/*.bicepparam"
       - ".github/workflows/bicep_test_and_deploy.yml"
       - ".github/workflows/bicep_verify.yml"
-      - ".github/workflows/bicep_create_matrix.yml"
-      - ".github/workflows/scripts/bicep_matrix.sh"
       - ".github/actions/bicep_lint/action.yml"
+      - ".github/actions/bicep_matrix/action.yml"
+      - ".github/actions/bicep_matrix/bicep_matrix.sh"
       - ".github/actions/bicep_validate/action.yml"
     types: [opened, synchronize, edited, ready_for_review]
   workflow_dispatch:
@@ -28,7 +28,15 @@ permissions:
 jobs:
   matrix-output:
     name: create matrix
-    uses: ./.github/workflows/bicep_create_matrix.yml
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.create-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/bicep_matrix
+        id: create-matrix
 
   verify:
     name: PR-Validation
