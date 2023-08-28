@@ -38,7 +38,7 @@ jobs:
       - uses: ./.github/actions/bicep_matrix
         id: create-matrix
 
-  verify:
+  PR-Validation:
     name: PR-Validation
     if: github.event_name == 'pull_request' && needs.matrix-output.outputs.matrix != ''
     needs: matrix-output
