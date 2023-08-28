@@ -29,7 +29,7 @@ on:
 jobs:
   verify:
     runs-on: ${{ inputs.runsOn}}
-    name: verify ${{ inputs.bicepFilePath }}
+    name: PR-Validation
     if: endsWith(inputs.bicepFilePath, '.bicep')
     steps:
       # checkout sources
