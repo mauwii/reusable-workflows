@@ -39,7 +39,7 @@ jobs:
         id: create-matrix
 
   PR-Validation:
-    name: PR-Validation
+    name: ${{ matrix.name }}
     if: github.event_name == 'pull_request' && needs.matrix-output.outputs.matrix != ''
     needs: matrix-output
     strategy:
@@ -52,6 +52,14 @@ jobs:
       login: true
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
+  PR-Verified:
+    needs: PR-Validation
+    name: PR-Verified
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && needs.PR-Validation.result == 'success'
+    steps:
+      - run: echo "PR-Verified"
 
   deploy:
     name: Deployment
