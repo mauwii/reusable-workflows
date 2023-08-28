@@ -27,9 +27,9 @@ on:
         required: false
 
 jobs:
-  verify:
+  PR-Validation:
+    name: ${{ inputs.bicepFilePath }}
     runs-on: ${{ inputs.runsOn}}
-    name: verify ${{ inputs.bicepFilePath }}
     if: endsWith(inputs.bicepFilePath, '.bicep')
     steps:
       # checkout sources

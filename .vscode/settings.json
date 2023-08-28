@@ -1,0 +1,5 @@
+{
+    "files.associations": {
+        "**/.github/actions/*/action.yml": "github-actions-workflow"
+    }
+}
