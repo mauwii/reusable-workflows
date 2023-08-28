@@ -28,6 +28,7 @@ on:
 
 jobs:
   PR-Validation:
+    name: ${{ inputs.bicepFilePath }}
     runs-on: ${{ inputs.runsOn}}
     if: endsWith(inputs.bicepFilePath, '.bicep')
     steps:
